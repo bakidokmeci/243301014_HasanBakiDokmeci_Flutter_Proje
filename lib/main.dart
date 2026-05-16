@@ -1,3 +1,4 @@
+import 'screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -20,9 +21,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Bisiklet Kiralama Sistemi',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const Scaffold(
-        body: Center(child: Text('Supabase Bağlantısı Hazır!')),
-      ),
+      home: const LoginScreen(),
     );
   }
 }
