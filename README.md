@@ -12,7 +12,7 @@ Mobil Programlama projesi.
 | Rol | E-posta | Şifre |
 | :--- | :--- | :--- |
 | Yönetici | admin@test.com | 123456 |
-| Müşteri | musteri@test.com | 123456 |
+| Müşteri | musteri0@test.com | 123456 |
 
 ---
 
