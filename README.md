@@ -1,30 +1,31 @@
-# Mobil Programlama Projesi: Bisiklet Kiralama Sistemi
+##  Mobil Programlama Dersi Final Projesi
 
-## Öğrenci Bilgileri
-* **Ad Soyad:** Hasan Baki Dökmeci
-* **Numara:** 243301014
-
----
-
-## Proje Hakkında
-Bu Final Projem Flutter ve Supabase kullanılarak geliştirilmiş bir bisiklet kiralama uygulamasıdır. Projede rol tabanlı kullanıcı yönetimi (Yönetici ve Müşteri) ile bulut veritabanı (CRUD) entegrasyonu sağlandı.
+Öğrenci Adı: Hasan Baki Dökmeci  
+Öğrenci Numarası: 243301014  
+Ders: Mobil Programlama
 
 ---
 
-## Test Hesapları
-> **Önemli:** Uygulamayı test ederken aşağıdaki hazır hesapları kullanabilir veya kayıt olma ekranından yeni rollerle hesap oluşturabilirsiniz.
+# Test Hesapları
 
-| Rol | E-posta | Şifre |
-| :--- | :--- | :--- |
-| **Yönetici (Admin)** | admin0@gmail.com | 123456 |
-| **Müşteri (Customer)** | musteri0@gmail.com | 123456 |
+* Yönetici (Admin): admin0@gmail.com / Şifre: 123456
+* Müşteri (Customer): musteri0@gmail.com / Şifre: 123456
 
 ---
 
-## Kullanılan Paketler
-* `supabase_flutter` 
+#  Paketler
+
+* `supabase_flutter`
 
 ---
 
-## Ekran Görüntüleri
-*(Buraya eklediğin ekran görüntülerinin linklerini koyabilirsin)*
+##  Uygulama Ekran Görüntüleri
+
+# Giriş Ekranı:<img width="617" height="885" alt="login" src="https://github.com/user-attachments/assets/2ca644e9-7295-4207-9d0e-978a9139169d" />
+
+
+
+# Müşteri Ekranı:<img width="632" height="890" alt="Customer" src="https://github.com/user-attachments/assets/aa38d650-f380-41aa-91ea-cfe3227359d8" />
+
+# Admin Ekranı:<img width="621" height="887" alt="Admin" src="https://github.com/user-attachments/assets/571cd7cf-2d77-4df8-8f85-e032e88c488f" />
+
