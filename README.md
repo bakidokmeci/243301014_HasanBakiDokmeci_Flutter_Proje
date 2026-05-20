@@ -11,8 +11,8 @@ Mobil Programlama projesi.
 ## Test Hesapları
 | Rol | E-posta | Şifre |
 | :--- | :--- | :--- |
-| Yönetici | admin@test.com | 123456 |
-| Müşteri | musteri0@test.com | 123456 |
+| Yönetici | admin0@gmail.com | 123456 |
+| Müşteri | musteri0@gmail.com | 123456 |
 
 ---
 
