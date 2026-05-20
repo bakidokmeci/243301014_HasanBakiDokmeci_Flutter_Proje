@@ -22,7 +22,8 @@ class _AdminHomeState extends State<AdminHome> {
     _fetchBikes();
   }
 
-  void _fetchBikes() async {
+  // Yenileme mekanizması için bu fonksiyon Future döndürecek şekilde güncellendi
+  Future<void> _fetchBikes() async {
     try {
       final data = await Supabase.instance.client
           .from('bikes')
@@ -95,6 +96,11 @@ class _AdminHomeState extends State<AdminHome> {
       appBar: AppBar(
         title: const Text('Yönetici Paneli'),
         actions: [
+          // Sayfayı elle yenilemek için sağ üste bir yenileme butonu ekledik
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _fetchBikes,
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
@@ -141,21 +147,40 @@ class _AdminHomeState extends State<AdminHome> {
             Expanded(
               child: _bikes.isEmpty
                   ? const Center(child: Text('Henüz bisiklet eklenmemiş.'))
-                  : ListView.builder(
-                      itemCount: _bikes.length,
-                      itemBuilder: (context, index) {
-                        final bike = _bikes[index];
-                        return Card(
-                          child: ListTile(
-                            title: Text('${bike['brand']} - ${bike['model']}'),
-                            subtitle: Text('Saatlik: ${bike['hourly_rate']} TL'),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => _deleteBike(bike['id']),
+                  : RefreshIndicator(
+                      onRefresh: _fetchBikes, // Sayfayı aşağı kaydırınca verileri yeniler
+                      child: ListView.builder(
+                        itemCount: _bikes.length,
+                        itemBuilder: (context, index) {
+                          final bike = _bikes[index];
+                          final bool isAvailable = bike['is_available'] ?? true;
+
+                          return Card(
+                            child: ListTile(
+                              title: Text('${bike['brand']} - ${bike['model']}'),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Saatlik: ${bike['hourly_rate']} TL'),
+                                  const SizedBox(height: 4),
+                                  // Bisikletin kiralama durumunu adminin görmesi için ekledik
+                                  Text(
+                                    isAvailable ? 'Durum: Müsait' : 'Durum: Kirada',
+                                    style: TextStyle(
+                                      color: isAvailable ? Colors.green : Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () => _deleteBike(bike['id']),
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
             ),
           ],
