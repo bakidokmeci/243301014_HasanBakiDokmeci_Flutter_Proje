@@ -19,7 +19,6 @@ class _CustomerHomeState extends State<CustomerHome> {
     _fetchBikes();
   }
 
-
   void _fetchBikes() async {
     try {
       final data = await Supabase.instance.client
@@ -36,7 +35,6 @@ class _CustomerHomeState extends State<CustomerHome> {
     }
   }
 
-
   void _toggleRentBike(int id, bool currentStatus) async {
     setState(() => _isLoading = true);
     try {
@@ -45,8 +43,8 @@ class _CustomerHomeState extends State<CustomerHome> {
           .update({'is_available': !currentStatus})
           .eq('id', id);
       
-      _fetchBikes(); 
-      _showSnackBar(currentStatus ? 'Bisiklet başarıyla kiralandı!' : 'Bisiklet teslim edildi.');
+      _fetchBikes();
+      _showSnackBar(currentStatus ? 'Bisiklet başarıyla kiralandı!' : 'Bisiklet başarıyla teslim edildi.');
     } catch (error) {
       _showSnackBar('İşlem başarısız: ${error.toString()}');
     } finally {
@@ -65,13 +63,19 @@ class _CustomerHomeState extends State<CustomerHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Müşteri Bisiklet Kiralama'),
+        title: const Text('Bisiklet Kiralama', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.blueAccent, // Müşteri teması rengi
+        elevation: 4,
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.refresh, color: Colors.white),
+            onPressed: _fetchBikes,
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
               await Supabase.instance.client.auth.signOut();
-              if (!mounted) return;
+              if (!mounted) return; // Mavi uyarıyı çözen kritik satır
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -86,10 +90,10 @@ class _CustomerHomeState extends State<CustomerHome> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Kiralanabilir Bisikletler',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              'Kiralanabilir Uygun Bisikletler',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Expanded(
               child: _bikes.isEmpty
                   ? const Center(child: Text('Sistemde henüz bisiklet bulunmuyor.'))
@@ -102,33 +106,48 @@ class _CustomerHomeState extends State<CustomerHome> {
                         return Card(
                           elevation: 3,
                           margin: const EdgeInsets.symmetric(vertical: 8),
-                          child: ListTile(
-                            leading: Icon(
-                              Icons.directions_bike,
-                              color: isAvailable ? Colors.green : Colors.red,
-                              size: 36,
-                            ),
-                            title: Text(
-                              '${bike['brand']} - ${bike['model']}',
-                              style: const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            subtitle: Text('Saatlik Ücret: ${bike['hourly_rate']} TL'),
-                            trailing: _isLoading
-                                ? const SizedBox(
-                                    width: 24,
-                                    height: 24,
-                                    child: CircularProgressIndicator(strokeWidth: 2),
-                                  )
-                                : ElevatedButton(
-                                    onPressed: () => _toggleRentBike(bike['id'], isAvailable),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: isAvailable ? Colors.blue : Colors.grey,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 6.0),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                radius: 24,
+                                backgroundColor: isAvailable ? Colors.green : Colors.red,
+                                child: Icon(
+                                  Icons.directions_bike,
+                                  color: isAvailable ? Colors.green : Colors.red,
+                                  size: 28,
+                                ),
+                              ),
+                              title: Text(
+                                '${bike['brand']} - ${bike['model']}',
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              ),
+                              subtitle: Padding(
+                                padding: const EdgeInsets.only(top: 4.0),
+                                child: Text(
+                                  'Saatlik: ${bike['hourly_rate']} TL',
+                                  style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                              trailing: _isLoading
+                                  ? const SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    )
+                                  : ElevatedButton(
+                                      onPressed: () => _toggleRentBike(bike['id'], isAvailable),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: isAvailable ? Colors.green : Colors.orange,
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                      ),
+                                      child: Text(
+                                        isAvailable ? 'Kirala' : 'Teslim Et',
+                                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                      ),
                                     ),
-                                    child: Text(
-                                      isAvailable ? 'Kirala' : 'Teslim Et',
-                                      style: const TextStyle(color: Colors.white),
-                                    ),
-                                  ),
+                            ),
                           ),
                         );
                       },

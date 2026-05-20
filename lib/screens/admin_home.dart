@@ -22,7 +22,6 @@ class _AdminHomeState extends State<AdminHome> {
     _fetchBikes();
   }
 
-  // Yenileme mekanizması için bu fonksiyon Future döndürecek şekilde güncellendi
   Future<void> _fetchBikes() async {
     try {
       final data = await Supabase.instance.client
@@ -94,18 +93,19 @@ class _AdminHomeState extends State<AdminHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Yönetici Paneli'),
+        title: const Text('Yönetici Paneli', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.indigo, // Daha profesyonel bir renk
+        elevation: 4,
         actions: [
-          // Sayfayı elle yenilemek için sağ üste bir yenileme butonu ekledik
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh, color: Colors.white),
             onPressed: _fetchBikes,
           ),
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
               await Supabase.instance.client.auth.signOut();
-              if (!mounted) return;
+              if (!mounted) return; // Mavi uyarıyı çözen kritik satır
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -118,37 +118,44 @@ class _AdminHomeState extends State<AdminHome> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
-              controller: _brandController,
-              decoration: const InputDecoration(labelText: 'Marka'),
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    const Text('Yeni Bisiklet Ekle', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.indigo)),
+                    TextField(controller: _brandController, decoration: const InputDecoration(labelText: 'Marka')),
+                    TextField(controller: _modelController, decoration: const InputDecoration(labelText: 'Model')),
+                    TextField(
+                      controller: _rateController,
+                      decoration: const InputDecoration(labelText: 'Saatlik Ücret (TL)'),
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(height: 16),
+                    _isLoading
+                        ? const CircularProgressIndicator()
+                        : ElevatedButton(
+                            onPressed: _addBike,
+                            style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo, foregroundColor: Colors.white),
+                            child: const Text('Bisikleti Sisteme Kaydet'),
+                          ),
+                  ],
+                ),
+              ),
             ),
-            TextField(
-              controller: _modelController,
-              decoration: const InputDecoration(labelText: 'Model'),
-            ),
-            TextField(
-              controller: _rateController,
-              decoration: const InputDecoration(labelText: 'Saatlik Ücret (TL)'),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 16),
-            _isLoading
-                ? const CircularProgressIndicator()
-                : ElevatedButton(
-                    onPressed: _addBike,
-                    child: const Text('Yeni Bisiklet Ekle'),
-                  ),
-            const Divider(height: 32),
+            const SizedBox(height: 20),
             const Text(
-              'Mevcut Bisikletler',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              'Sistemdeki Mevcut Bisikletler',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Expanded(
               child: _bikes.isEmpty
                   ? const Center(child: Text('Henüz bisiklet eklenmemiş.'))
                   : RefreshIndicator(
-                      onRefresh: _fetchBikes, // Sayfayı aşağı kaydırınca verileri yeniler
+                      onRefresh: _fetchBikes,
                       child: ListView.builder(
                         itemCount: _bikes.length,
                         itemBuilder: (context, index) {
@@ -156,25 +163,37 @@ class _AdminHomeState extends State<AdminHome> {
                           final bool isAvailable = bike['is_available'] ?? true;
 
                           return Card(
+                            elevation: 2,
+                            margin: const EdgeInsets.symmetric(vertical: 6),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                             child: ListTile(
-                              title: Text('${bike['brand']} - ${bike['model']}'),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Saatlik: ${bike['hourly_rate']} TL'),
-                                  const SizedBox(height: 4),
-                                  // Bisikletin kiralama durumunu adminin görmesi için ekledik
-                                  Text(
-                                    isAvailable ? 'Durum: Müsait' : 'Durum: Kirada',
-                                    style: TextStyle(
-                                      color: isAvailable ? Colors.green : Colors.red,
-                                      fontWeight: FontWeight.bold,
+                              leading: CircleAvatar(
+                                backgroundColor: isAvailable ? Colors.green.withOpacity(0.2) : Colors.red.withOpacity(0.2),
+                                child: Icon(Icons.directions_bike, color: isAvailable ? Colors.green : Colors.red),
+                              ),
+                              title: Text('${bike['brand']} - ${bike['model']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                              subtitle: Padding(
+                                padding: const EdgeInsets.only(top: 4.0),
+                                child: Row(
+                                  children: [
+                                    Text('${bike['hourly_rate']} TL/Saat', style: const TextStyle(color: Colors.grey)),
+                                    const SizedBox(width: 12),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: isAvailable ? Colors.green : Colors.red,
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                      child: Text(
+                                        isAvailable ? 'Müsait' : 'Kirada',
+                                        style: TextStyle(color: isAvailable ? Colors.green : Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                               trailing: IconButton(
-                                icon: const Icon(Icons.delete, color: Colors.red),
+                                icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
                                 onPressed: () => _deleteBike(bike['id']),
                               ),
                             ),
