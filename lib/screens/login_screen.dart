@@ -11,119 +11,109 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  String _selectedRole = 'customer';
-  bool _isSignUp = false;
-  bool _isLoading = false;
 
-  void _authenticate() async {
-    setState(() => _isLoading = true);
+  final emailField = TextEditingController();
+  final passwordField = TextEditingController();
+  
+  String secilenRol = 'customer'; 
+  bool kayitModu = false; 
+
+
+  void islemiYap() async {
     final supabase = Supabase.instance.client;
 
-    try {
-      if (_isSignUp) {
-        // Kayıt Olma İşlemi
-        await supabase.auth.signUp(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-          data: {'role': _selectedRole},
-        );
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Kayıt başarılı! Giriş yapabilirsiniz.')),
-        );
-        setState(() => _isSignUp = false);
-      } else {
-        // Giriş Yapma İşlemi
-        final response = await supabase.auth.signInWithPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-        );
+    if (kayitModu) {
 
-        final userRole = response.user?.userMetadata?['role'] ?? 'customer';
-
-        if (!mounted) return;
-
-        // Okunan role göre ilgili ana sayfaya yönlendiriyoruz
-        if (userRole == 'admin') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const AdminHome()),
-          );
-        } else {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const CustomerHome()),
-          );
-        }
-      }
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Hata: ${error.toString()}')),
+      await supabase.auth.signUp(
+        email: emailField.text,
+        password: passwordField.text,
+        data: {'role': secilenRol}, 
       );
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
+      
+
+      setState(() {
+        kayitModu = false;
+      });
+    } else {
+      // Öğrenci Usulü Giriş Yapma İşlemi
+      final cevap = await supabase.auth.signInWithPassword(
+        email: emailField.text,
+        password: passwordField.text,
+      );
+
+
+      final rol = cevap.user?.userMetadata?['role'] ?? 'customer';
+
+
+      if (rol == 'admin') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const AdminHome()),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const CustomerHome()),
+        );
       }
     }
   }
 
   @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_isSignUp ? 'Kayıt Ol' : 'Giriş Yap')),
+      appBar: AppBar(
+        title: Text(kayitModu ? 'Hesap Oluştur' : 'Sisteme Giriş'),
+      ),
       body: Center(
         child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(labelText: 'E-posta'),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _passwordController,
-                  decoration: const InputDecoration(labelText: 'Şifre'),
-                  obscureText: true,
-                ),
-                if (_isSignUp) ...[
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    value: _selectedRole,
-                    items: const [
-                      DropdownMenuItem(value: 'customer', child: Text('Müşteri')),
-                      DropdownMenuItem(value: 'admin', child: Text('Yönetici (Admin)')),
-                    ],
-                    onChanged: (val) => setState(() => _selectedRole = val!),
-                    decoration: const InputDecoration(labelText: 'Sistem Rolü'),
-                  ),
-                ],
-                const SizedBox(height: 20),
-                _isLoading
-                    ? const CircularProgressIndicator()
-                    : ElevatedButton(
-                        onPressed: _authenticate,
-                        child: Text(_isSignUp ? 'Kayıt Ol' : 'Giriş Yap'),
-                      ),
-                TextButton(
-                  onPressed: () => setState(() => _isSignUp = !_isSignUp),
-                  child: Text(_isSignUp
-                      ? 'Zaten hesabınız var mı? Giriş yapın'
-                      : 'Hesabınız yok mu? Kayıt olun'),
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextField(
+                controller: emailField,
+                decoration: const InputDecoration(labelText: 'E-posta Adresiniz'),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: passwordField,
+                decoration: const InputDecoration(labelText: 'Şifreniz'),
+                obscureText: true, 
+              ),
+
+              if (kayitModu) ...[
+                const SizedBox(height: 10),
+                DropdownButtonFormField<String>(
+                  value: secilenRol,
+                  items: const [
+                    DropdownMenuItem(value: 'customer', child: Text('Müşteri Hesabı')),
+                    DropdownMenuItem(value: 'admin', child: Text('Yönetici Hesabı')),
+                  ],
+                  onChanged: (deger) {
+                    setState(() {
+                      secilenRol = deger!;
+                    });
+                  },
+                  decoration: const InputDecoration(labelText: 'Kullanıcı Tipi Seçin'),
                 ),
               ],
-            ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: islemiYap,
+                child: Text(kayitModu ? 'Kayıt İşlemini Tamamla' : 'Giriş Yap'),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    kayitModu = !kayitModu;
+                  });
+                },
+                child: Text(kayitModu
+                    ? 'Zaten hesabım var, Giriş Yap'
+                    : 'Hesabınız yok mu? Yeni Hesap Açın'),
+              ),
+            ],
           ),
         ),
       ),
