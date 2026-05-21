@@ -20,12 +20,7 @@ Ders: Mobil Programlama
 ---
 
 ##  Uygulama Ekran Görüntüleri
-
-# Giriş Ekranı:<img width="617" height="885" alt="login" src="https://github.com/user-attachments/assets/2ca644e9-7295-4207-9d0e-978a9139169d" />
-
-
-
-# Müşteri Ekranı:<img width="632" height="890" alt="Customer" src="https://github.com/user-attachments/assets/aa38d650-f380-41aa-91ea-cfe3227359d8" />
-
-# Admin Ekranı:<img width="621" height="887" alt="Admin" src="https://github.com/user-attachments/assets/571cd7cf-2d77-4df8-8f85-e032e88c488f" />
+<img width="1080" height="2400" alt="0" src="https://github.com/user-attachments/assets/3994d92e-efc1-4ef9-8fe3-09662ecd08bb" />
+<img width="1080" height="2400" alt="2" src="https://github.com/user-attachments/assets/efce1776-322b-4a10-88cc-75a8f5bfb041" />
+<img width="1080" height="2400" alt="1" src="https://github.com/user-attachments/assets/497d1307-6764-4620-b2f0-8146ab64ff5d" />
 
